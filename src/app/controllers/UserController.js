@@ -5,9 +5,17 @@ const { ref } = require("yup");
 const User = require("../models/User");
 
 class UserController {
+  async index(req, res) {
+    const users = await User.paginate(null, {
+      page: req.query.page || 1,
+      limit: 10,
+      sort: "-createdAt"
+    });
+
+    return res.json(users);
+  }
   async store(req, res) {
     const UserExists = await User.findOne({ email: req.body.email }); // verifica se o email informado já existe no bd
-    console.log(req.body.email);
 
     if (UserExists) {
       return res
@@ -16,6 +24,12 @@ class UserController {
     }
 
     const user = await User.create(req.body); //retorna só os dados informados, poderia retornar todos os dados do bd atribuindo eles a uma variável
+
+    return res.json(user);
+  }
+
+  async show(req, res) {
+    const user = await User.findById(req.params.id);
 
     return res.json(user);
   }
@@ -44,7 +58,7 @@ class UserController {
 
     const { email, oldPassword } = req.body;
 
-    const user = await User.findByPk(req.userId); // busca o usuário pa PK
+    const user = await User.findById(req.userId); // busca o usuário pela PK
 
     if (email != user.email) {
       const userExists = await User.findOne({ where: { email } }); // verifica se o email informado já existe no bd
@@ -61,13 +75,15 @@ class UserController {
         error: "A senha informada não corresponde com a antiga senha"
       });
     }
-    const { id, name } = await user.update(req.body);
+    await user.update(req.body);
 
-    return res.json({
-      id,
-      name,
-      email
-    });
+    return res.json(user);
+  }
+
+  async destroy(req, res) {
+    await User.findOneAndDelete(req.params.id);
+
+    return res.json();
   }
 }
 

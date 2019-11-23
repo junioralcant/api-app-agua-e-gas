@@ -16,8 +16,8 @@ const ProdutoSchema = new mongoose.Schema({
     required: true
   },
   quantidade: {
-    type: Integer,
-    required
+    type: Number,
+    required: true
   }
 });
 

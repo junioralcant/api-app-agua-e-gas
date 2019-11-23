@@ -9,26 +9,30 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  endereco: {
-    type: String,
-    required: true
-  },
-  bairro: {
-    type: String,
-    required: true
-  },
-  cidade: {
-    type: String,
-    required: true
-  },
-  estado: {
-    type: String,
-    required: false
-  },
-  numeroDaCasa: {
-    type: String,
-    required: true
-  },
+  endereco: [
+    {
+      rua: {
+        type: String,
+        required: true
+      },
+      bairro: {
+        type: String,
+        required: true
+      },
+      cidade: {
+        type: String,
+        required: true
+      },
+      estado: {
+        type: String,
+        required: false
+      },
+      numeroCasa: {
+        type: String,
+        required: true
+      }
+    }
+  ],
   telefone: {
     type: String,
     required: true

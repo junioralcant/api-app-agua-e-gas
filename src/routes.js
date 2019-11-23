@@ -3,6 +3,15 @@ const express = require("express");
 const routes = express.Router();
 
 const controllers = require("./app/controllers/");
+const middleware = require("./app/middleware/auth");
+
+/**
+ * Session
+ */
+routes.post("/sessions", controllers.SessionController.store);
+routes.post("/users", controllers.UserController.store);
+
+routes.use(middleware);
 
 /**
  * Categoria
@@ -12,5 +21,31 @@ routes.post("/categorias", controllers.CategoriaController.store);
 routes.get("/categorias/:id", controllers.CategoriaController.show);
 routes.put("/categorias/:id", controllers.CategoriaController.update);
 routes.delete("/categorias/:id", controllers.CategoriaController.destroy);
+
+/**
+ * Produto
+ */
+routes.get("/produtos", controllers.ProdutoController.index);
+routes.post("/produtos", controllers.ProdutoController.store);
+routes.get("/produtos/:id", controllers.ProdutoController.show);
+routes.put("/produtos/:id", controllers.ProdutoController.update);
+routes.delete("/produtos/:id", controllers.ProdutoController.destroy);
+
+/**
+ * User
+ */
+routes.get("/users", controllers.UserController.index);
+routes.get("/users/:id", controllers.UserController.show);
+routes.put("/users/:id", controllers.UserController.update);
+routes.delete("/users/:id", controllers.UserController.destroy);
+
+/**
+ * Pedido
+ */
+routes.get("/pedidos", controllers.PedidoController.index);
+routes.post("/pedidos", controllers.PedidoController.store);
+routes.get("/pedidos/:id", controllers.PedidoController.show);
+routes.put("/pedidos/:id", controllers.PedidoController.update);
+routes.delete("/pedidos/:id", controllers.PedidoController.destroy);
 
 module.exports = routes;

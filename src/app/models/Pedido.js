@@ -13,7 +13,11 @@ const PedidoSchema = new mongoose.Schema({
     required: true
   },
   quantidade: {
-    type: Interger,
+    type: Number,
+    required: true
+  },
+  valorTotal: {
+    type: Number,
     required: true
   }
 });
