@@ -15,6 +15,14 @@ class ProdutoController {
   }
 
   async store(req, res) {
+    const userLogado = await User.findById(req.userId);
+
+    if (userLogado.provedor !== true) {
+      return res.json({
+        mensagem: "Você não tem permissão para cadadastrar produtos"
+      });
+    }
+
     const produto = await Produto.create(req.body);
 
     return res.json(produto);
@@ -27,6 +35,13 @@ class ProdutoController {
   }
 
   async update(req, res) {
+    const userLogado = await User.findById(req.userId);
+
+    if (userLogado.provedor !== true) {
+      return res.json({
+        mensagem: "Você não tem permissão para alterar produtos"
+      });
+    }
     const produto = await Produto.findByIdAndUpdate(req.params.id, req.body, {
       new: true
     });
@@ -35,6 +50,13 @@ class ProdutoController {
   }
 
   async destroy(req, res) {
+    const userLogado = await User.findById(req.userId);
+
+    if (userLogado.provedor !== true) {
+      return res.json({
+        mensagem: "Você não tem permissão para deletar produtos"
+      });
+    }
     await Produto.findByIdAndDelete(req.params.id);
 
     return res.send();
