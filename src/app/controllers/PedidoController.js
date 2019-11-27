@@ -1,9 +1,6 @@
-const {
-  parseFromTimeZone,
-  convertToTimeZone,
-  formatToTimeZone
-} = require("date-fns-timezone");
-const {} = require("date-fns");
+const { formatToTimeZone } = require("date-fns-timezone");
+
+const getHours = require("date-fns/getHours");
 
 const Pedido = require("../models/Pedido");
 const Produto = require("../models/Produto");
@@ -39,7 +36,7 @@ class PedidoController {
     const userLogado = await User.findById(req.userId);
 
     // se não for um provedor
-    if (userLogado.provedor != true) {
+    if (userLogado.provedor !== true) {
       const pedidos = await Pedido.find({
         cliente: req.userId
       }).populate("cliente");
@@ -59,12 +56,35 @@ class PedidoController {
 
   async store(req, res) {
     const produto = await Produto.findById(req.body.produto);
+    const hora = getHours(new Date(Date.now())); //pega o número da hora
+
+    if (hora < 8 || hora >= 18) {
+      return res.status(400).json({
+        mensagem:
+          "Ops, os pedidos só podem ser feitos das 08:00 da manhã ás 18:00 da tarde"
+      });
+    }
+    if (produto.quantidade <= 0) {
+      return res.status(400).json({
+        mensagem:
+          "Ops, felizmente vendemos todo o nosso estoque e o produto desejado esta indisponível. Tente novamente mais tarde."
+      });
+    }
+    if (produto.quantidade < req.body.quantidade) {
+      return res.status(400).json({
+        mensagem:
+          "Ops, a quantidade pedida é maior do que temos disponível no momento."
+      });
+    }
 
     const pedido = await Pedido.create({
       ...req.body,
       cliente: req.userId,
       valorTotal: produto.preco * req.body.quantidade
     });
+
+    produto.quantidade -= req.body.quantidade;
+    await produto.save();
 
     return res.json(pedido);
   }
@@ -80,7 +100,7 @@ class PedidoController {
       userLogado.provedor !== true
     ) {
       return res.status(400).json({
-        mensagem: "Você não tem permissão para alterar este pedido"
+        mensagem: "Você não tem permissão para alterar este pedido."
       });
     }
 
@@ -105,7 +125,7 @@ class PedidoController {
       userLogado.provedor !== true
     ) {
       return res.status(400).json({
-        mensagem: "Você não tem permissão para alterar este pedido"
+        mensagem: "Você não tem permissão para alterar este pedido."
       });
     }
     const pedido = await Pedido.findById(req.params.id)
@@ -125,7 +145,7 @@ class PedidoController {
       userLogado.provedor !== true
     ) {
       return res.status(400).json({
-        mensagem: "Você não tem permissão para excluir este pedido"
+        mensagem: "Você não tem permissão para excluir este pedido."
       });
     }
     // await Pedido.findByIdAndDelete(req.params.id);
