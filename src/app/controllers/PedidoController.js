@@ -31,8 +31,6 @@ class PedidoController {
           timeZone: "America/Sao_Paulo"
         }
       );
-      console.log(dataMinFormatada);
-      console.log(dataMaxFormatada);
 
       filters.createdAt.$gte = dataMinFormatada;
       filters.createdAt.$lte = dataMaxFormatada;
@@ -81,7 +79,7 @@ class PedidoController {
       String(userLogado._id) !== String(pedidoExistente.cliente) &&
       userLogado.provedor !== true
     ) {
-      return res.json({
+      return res.status(400).json({
         mensagem: "Você não tem permissão para alterar este pedido"
       });
     }
@@ -94,18 +92,22 @@ class PedidoController {
     pedido.valorTotal = produto.preco * req.body.quantidade;
 
     await pedido.save(); // atualiza o valor total do pedido
-    return res.json(pedido);
+    return res.status(400).json(pedido);
   }
 
   async show(req, res) {
     const userLogado = await User.findById(req.userId);
+    const pedidoExistente = await Pedido.findById(req.params.id);
 
-    if (!userLogado) {
-      return res.json({
-        mensagem: "Você não tem permissão para alterar esse pedido"
+    //condição para saber se o usuário logado é o autor do pedido ao é um provedor
+    if (
+      String(userLogado._id) !== String(pedidoExistente.cliente) &&
+      userLogado.provedor !== true
+    ) {
+      return res.status(400).json({
+        mensagem: "Você não tem permissão para alterar este pedido"
       });
     }
-
     const pedido = await Pedido.findById(req.params.id)
       .populate("produto")
       .populate("cliente");
@@ -114,7 +116,19 @@ class PedidoController {
   }
 
   async destroy(req, res) {
-    await Pedido.findByIdAndDelete(req.params.id);
+    const userLogado = await User.findById(req.userId);
+    const pedidoExistente = await Pedido.findById(req.params.id);
+
+    //condição para saber se o usuário logado é o autor do pedido ao é um provedor
+    if (
+      String(userLogado._id) !== String(pedidoExistente.cliente) &&
+      userLogado.provedor !== true
+    ) {
+      return res.status(400).json({
+        mensagem: "Você não tem permissão para excluir este pedido"
+      });
+    }
+    // await Pedido.findByIdAndDelete(req.params.id);
 
     return res.json();
   }

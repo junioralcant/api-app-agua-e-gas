@@ -17,7 +17,7 @@ class ProdutoController {
     const userLogado = await User.findById(req.userId);
 
     if (userLogado.provedor !== true) {
-      return res.json({
+      return res.status(400).json({
         mensagem: "Você não tem permissão para cadadastrar produtos"
       });
     }
@@ -28,14 +28,14 @@ class ProdutoController {
 
   async show(req, res) {
     const produto = await Produto.findById(req.params.id);
-    return res.json(produto);
+    return res.status(400).json(produto);
   }
 
   async update(req, res) {
     const userLogado = await User.findById(req.userId);
 
     if (userLogado.provedor !== true) {
-      return res.json({
+      return res.status(400).json({
         mensagem: "Você não tem permissão para alterar produtos"
       });
     }
@@ -50,7 +50,7 @@ class ProdutoController {
     const userLogado = await User.findById(req.userId);
 
     if (userLogado.provedor !== true) {
-      return res.json({
+      return res.status(400).json({
         mensagem: "Você não tem permissão para deletar produtos"
       });
     }
