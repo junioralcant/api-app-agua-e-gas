@@ -6,7 +6,7 @@ class CategoriaController {
     const userLogado = await User.findById(req.userId);
 
     if (userLogado.provedor != true) {
-      return res.json({
+      return res.status(400).json({
         mensagem: "Você não tem permissão para ver as categorias"
       });
     }
@@ -19,7 +19,7 @@ class CategoriaController {
     const userLogado = await User.findById(req.userId);
 
     if (userLogado.provedor != true) {
-      return res.json({
+      return res.status(400).json({
         mensagem: "Você não tem permissão para cria categorias"
       });
     }
@@ -32,7 +32,7 @@ class CategoriaController {
     const userLogado = await User.findById(req.userId);
 
     if (userLogado.provedor != true) {
-      return res.json({
+      return res.status(400).json({
         mensagem: "Você não tem permissão para atualizar categorias"
       });
     }
@@ -49,7 +49,7 @@ class CategoriaController {
     const userLogado = await User.findById(req.userId);
 
     if (userLogado.provedor != true) {
-      return res.json({
+      return res.status(400).json({
         mensagem: "Você não tem permissão para ver as categorias"
       });
     }
@@ -62,7 +62,7 @@ class CategoriaController {
     const userLogado = await User.findById(req.userId);
 
     if (userLogado.provedor != true) {
-      return res.json({
+      return res.status(400).json({
         mensagem: "Você não tem permissão para deletar categorias"
       });
     }
