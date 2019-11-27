@@ -9,7 +9,6 @@ class ProdutoController {
       populate: ["categoria"],
       sort: "-createdAt"
     });
-    console.log(produtos);
 
     return res.json(produtos);
   }
@@ -22,7 +21,6 @@ class ProdutoController {
         mensagem: "Você não tem permissão para cadadastrar produtos"
       });
     }
-
     const produto = await Produto.create(req.body);
 
     return res.json(produto);
@@ -30,7 +28,6 @@ class ProdutoController {
 
   async show(req, res) {
     const produto = await Produto.findById(req.params.id);
-
     return res.json(produto);
   }
 

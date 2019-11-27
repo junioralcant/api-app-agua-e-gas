@@ -1,3 +1,10 @@
+const {
+  parseFromTimeZone,
+  convertToTimeZone,
+  formatToTimeZone
+} = require("date-fns-timezone");
+const {} = require("date-fns");
+
 const Pedido = require("../models/Pedido");
 const Produto = require("../models/Produto");
 
@@ -5,10 +12,36 @@ const User = require("../models/User");
 
 class PedidoController {
   async index(req, res) {
+    const filters = {};
+    if (req.query.data_min || req.query.data_max) {
+      filters.createdAt = {};
+
+      const dataMinFormatada = formatToTimeZone(
+        req.query.data_min,
+        "YYYY-MM-DDT00:mm:ss.SSSZ", // formatação de data e hora
+        {
+          timeZone: "America/Sao_Paulo"
+        }
+      );
+
+      const dataMaxFormatada = formatToTimeZone(
+        req.query.data_max,
+        "YYYY-MM-DDT23:59:ss.SSSZ", // formatação de data e hora
+        {
+          timeZone: "America/Sao_Paulo"
+        }
+      );
+      console.log(dataMinFormatada);
+      console.log(dataMaxFormatada);
+
+      filters.createdAt.$gte = dataMinFormatada;
+      filters.createdAt.$lte = dataMaxFormatada;
+    }
+
     const userLogado = await User.findById(req.userId);
 
     // se não for um provedor
-    if (userLogado.provedor !== true) {
+    if (userLogado.provedor != true) {
       const pedidos = await Pedido.find({
         cliente: req.userId
       }).populate("cliente");
@@ -16,7 +49,12 @@ class PedidoController {
       return res.json(pedidos);
     }
 
-    const pedidos = await Pedido.find().populate("cliente");
+    const pedidos = await Pedido.paginate(filters, {
+      page: req.params.id,
+      limit: 10,
+      populate: ["cliente"],
+      sort: "-createdAt"
+    });
 
     return res.json(pedidos);
   }
@@ -44,7 +82,7 @@ class PedidoController {
       userLogado.provedor !== true
     ) {
       return res.json({
-        messagem: "Você não tem permissão para alterar este pedido"
+        mensagem: "Você não tem permissão para alterar este pedido"
       });
     }
 
