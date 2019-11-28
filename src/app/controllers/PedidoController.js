@@ -104,6 +104,18 @@ class PedidoController {
       });
     }
 
+    const valorQuantidadeUpdate =
+      pedidoExistente.quantidade - req.body.quantidade;
+
+    // Condição para alterar a quantidade do produto em estoque com base na alteração da quantidade do pedido
+    if (valorQuantidadeUpdate < 0) {
+      const quantidade = valorQuantidadeUpdate * -1; // formata para um número positivo
+      produto.quantidade -= quantidade;
+    } else {
+      const quantidade = valorQuantidadeUpdate;
+      produto.quantidade += quantidade;
+    }
+
     const pedido = await Pedido.findByIdAndUpdate(req.params.id, req.body, {
       valorTotal: produto.preco * req.body.quantidade,
       new: true
@@ -111,8 +123,10 @@ class PedidoController {
 
     pedido.valorTotal = produto.preco * req.body.quantidade;
 
-    await pedido.save(); // atualiza o valor total do pedido
-    return res.status(400).json(pedido);
+    await produto.save(); // atualiza as alterações feitas no produto
+    await pedido.save(); // atualiza as alterações feitas no pedido
+
+    return res.json(pedido);
   }
 
   async show(req, res) {
@@ -148,7 +162,7 @@ class PedidoController {
         mensagem: "Você não tem permissão para excluir este pedido."
       });
     }
-    // await Pedido.findByIdAndDelete(req.params.id);
+    await Pedido.findByIdAndDelete(req.params.id);
 
     return res.json();
   }
