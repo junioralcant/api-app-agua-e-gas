@@ -152,17 +152,20 @@ class PedidoController {
   async destroy(req, res) {
     const userLogado = await User.findById(req.userId);
     const pedidoExistente = await Pedido.findById(req.params.id);
+    const produto = await Produto.findById(pedidoExistente.produto);
 
-    //condição para saber se o usuário logado é o autor do pedido ao é um provedor
-    if (
-      String(userLogado._id) !== String(pedidoExistente.cliente) &&
-      userLogado.provedor !== true
-    ) {
+    //permite que apenas o provedor delete pedidos
+    if (userLogado.provedor !== true) {
       return res.status(400).json({
         mensagem: "Você não tem permissão para excluir este pedido."
       });
     }
+
     await Pedido.findByIdAndDelete(req.params.id);
+
+    // Atualização do produto em estoque
+    produto.quantidade += pedidoExistente.quantidade;
+    await produto.save(); // atualiza as alterações feitas no produto
 
     return res.json();
   }
