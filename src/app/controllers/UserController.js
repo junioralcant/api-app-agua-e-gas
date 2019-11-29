@@ -22,7 +22,6 @@ class UserController {
         .status(400)
         .json({ error: "Endereço de e-mail já existente." });
     }
-
     const user = await User.create(req.body); //retorna só os dados informados, poderia retornar todos os dados do bd atribuindo eles a uma variável
 
     return res.json(user);
@@ -75,7 +74,7 @@ class UserController {
         error: "A senha informada não corresponde com a antiga senha"
       });
     }
-    await user.update(req.body);
+    await user.update(req.body, { new: true });
 
     return res.json(user);
   }

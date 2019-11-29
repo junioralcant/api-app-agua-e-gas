@@ -48,4 +48,12 @@ routes.get("/pedidos/:id", controllers.PedidoController.show);
 routes.put("/pedidos/:id", controllers.PedidoController.update);
 routes.delete("/pedidos/:id", controllers.PedidoController.destroy);
 
+/**
+ * Endereço
+ */
+
+routes.post("/enderecos", controllers.EnderecoController.store);
+routes.get("/enderecos/:id", controllers.EnderecoController.show);
+routes.get("/enderecos", controllers.EnderecoController.index);
+routes.delete("/enderecos/:id", controllers.EnderecoController.destroy);
 module.exports = routes;
