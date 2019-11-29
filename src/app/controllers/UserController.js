@@ -6,6 +6,12 @@ const User = require("../models/User");
 
 class UserController {
   async index(req, res) {
+    const user = await User.findById(req.userId);
+    if (user.provedor !== true) {
+      return res.status(400).json({
+        mensagem: "Você não tem permissão para ver usuários do sistema"
+      });
+    }
     const users = await User.paginate(null, {
       page: req.query.page || 1,
       limit: 10,
@@ -14,6 +20,7 @@ class UserController {
 
     return res.json(users);
   }
+
   async store(req, res) {
     const UserExists = await User.findOne({ email: req.body.email }); // verifica se o email informado já existe no bd
 
