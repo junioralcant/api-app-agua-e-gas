@@ -10,6 +10,11 @@ const User = require("../models/User");
 class PedidoController {
   async index(req, res) {
     const filters = {};
+
+    if (req.query.nome) {
+      filters.nomeCliente = new RegExp(req.query.nome, "i");
+    }
+
     if (req.query.data_min || req.query.data_max) {
       filters.createdAt = {};
 
@@ -39,15 +44,15 @@ class PedidoController {
     if (userLogado.provedor !== true) {
       const pedidos = await Pedido.find({
         cliente: req.userId
-      }).populate("cliente");
+      }).populate(["cliente", "produto"]);
 
       return res.json(pedidos);
     }
 
     const pedidos = await Pedido.paginate(filters, {
-      page: req.params.id,
-      limit: 10,
-      populate: ["cliente"],
+      page: req.query.page || 1,
+      limit: 12,
+      populate: ["cliente", "produto"],
       sort: "-createdAt"
     });
 
@@ -56,6 +61,9 @@ class PedidoController {
 
   async store(req, res) {
     const produto = await Produto.findById(req.body.produto);
+    const user = await User.findById(req.userId);
+    const { endereco } = user;
+
     const hora = getHours(new Date(Date.now())); //pega o número da hora
 
     if (hora < 8 || hora >= 18) {
@@ -77,14 +85,24 @@ class PedidoController {
       });
     }
 
+    const enderecoEspecifico = endereco.find(
+      end => String(end._id) === String(req.body.enderecoId)
+    );
+
     const pedido = await Pedido.create({
       ...req.body,
       cliente: req.userId,
+      nomeCliente: user.nome,
+      enderecoEntrega: enderecoEspecifico,
       valorTotal: produto.preco * req.body.quantidade
     });
 
     produto.quantidade -= req.body.quantidade;
     await produto.save();
+
+    req.io.emit("createPedido", {
+      message: "Um novo pedido foi realizado"
+    });
 
     return res.json(pedido);
   }

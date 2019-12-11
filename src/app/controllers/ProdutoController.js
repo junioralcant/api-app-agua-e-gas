@@ -28,7 +28,7 @@ class ProdutoController {
 
   async show(req, res) {
     const produto = await Produto.findById(req.params.id);
-    return res.status(400).json(produto);
+    return res.json(produto);
   }
 
   async update(req, res) {

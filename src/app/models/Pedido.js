@@ -7,6 +7,10 @@ const PedidoSchema = new mongoose.Schema({
     ref: "User",
     required: true
   },
+  nomeCliente: {
+    type: String,
+    required: true
+  },
   produto: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Produto",
@@ -20,6 +24,7 @@ const PedidoSchema = new mongoose.Schema({
     type: Number,
     required: true
   },
+  enderecoEntrega: [{}],
   createdAt: {
     type: Date,
     default: Date.now

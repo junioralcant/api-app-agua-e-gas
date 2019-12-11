@@ -1,36 +1,34 @@
 require("dotenv").config();
-
-const express = require("express");
-const mongoose = require("mongoose");
 const cors = require("cors");
+const mongoose = require("mongoose");
+const express = require("express");
+const routes = require("./routes");
+
+const app = express();
+const server = require("http").Server(app);
+const io = require("socket.io")(server);
+
+io.on("connection", socket => {
+  console.log("Nova Conexão", socket.id);
+});
+
 const databaseConfig = require("./config/database");
 
-class App {
-  constructor() {
-    this.express = express();
-    this.express.use(cors());
+isDev = process.env.NODE_ENV != "development";
 
-    this.isDev = process.env.NODE_ENV != "development";
+mongoose.connect(databaseConfig.uri, {
+  useCreateIndex: true,
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+});
 
-    this.database();
-    this.middlewares();
-    this.routes();
-  }
+app.use((req, res, next) => {
+  req.io = io;
+  return next();
+});
 
-  database() {
-    mongoose.connect(databaseConfig.uri, {
-      useCreateIndex: true,
-      useNewUrlParser: true
-    });
-  }
+app.use(express.json());
+app.use(cors());
+app.use(routes);
 
-  middlewares() {
-    this.express.use(express.json());
-  }
-
-  routes() {
-    this.express.use(require("./routes"));
-  }
-}
-
-module.exports = new App().express;
+server.listen(3001 || process.env.PORT);
