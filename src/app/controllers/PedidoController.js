@@ -66,6 +66,8 @@ class PedidoController {
 
     const hora = getHours(new Date(Date.now())); //pega o número da hora
 
+    console.log(hora);
+
     if (hora < 8 || hora >= 18) {
       return res.status(400).json({
         mensagem:
