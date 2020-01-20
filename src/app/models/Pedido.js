@@ -20,6 +20,10 @@ const PedidoSchema = new mongoose.Schema({
     type: Number,
     required: true
   },
+  entregue: {
+    type: Boolean,
+    default: false
+  },
   valorTotal: {
     type: Number,
     required: true

@@ -49,6 +49,23 @@ routes.put("/pedidos/:id", controllers.PedidoController.update);
 routes.delete("/pedidos/:id", controllers.PedidoController.destroy);
 
 /**
+ * Pedido Entregue
+ */
+routes.get("/pedidosentregues", controllers.PedidoEntregueController.index);
+
+/**
+ * Pedido Nao Entregue
+ */
+routes.get(
+  "/pedidosnaoentregues",
+  controllers.PedidoNaoEntregueController.index
+);
+routes.put(
+  "/pedidosnaoentregues/:id",
+  controllers.PedidoNaoEntregueController.update
+);
+
+/**
  * Endereço
  */
 
