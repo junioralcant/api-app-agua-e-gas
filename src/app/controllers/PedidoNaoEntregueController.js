@@ -28,6 +28,10 @@ class PedidoNaoEntregueController {
       new: true
     });
 
+    req.io.emit(`entreguePedido${req.userId}`, {
+      message: "Seu pedido saiu para entrega"
+    });
+
     return res.json(pedido);
   }
 }
