@@ -68,12 +68,12 @@ class PedidoController {
 
     console.log(hora);
 
-    if (hora < 8 || hora >= 18) {
-      return res.status(400).json({
-        mensagem:
-          "Ops, os pedidos só podem ser feitos das 08:00 da manhã ás 18:00 da tarde"
-      });
-    }
+    // if (hora < 8 || hora >= 18) {
+    //   return res.status(400).json({
+    //     mensagem:
+    //       "Ops, os pedidos só podem ser feitos das 08:00 da manhã ás 18:00 da tarde"
+    //   });
+    // }
     if (produto.quantidade <= 0) {
       return res.status(400).json({
         mensagem:
