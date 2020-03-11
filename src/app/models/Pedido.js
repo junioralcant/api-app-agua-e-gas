@@ -29,6 +29,10 @@ const PedidoSchema = new mongoose.Schema({
     required: true
   },
   enderecoEntrega: [{}],
+  userOneSignalId: {
+    type: String,
+    required: false
+  },
   createdAt: {
     type: Date,
     default: Date.now
