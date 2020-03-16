@@ -44,7 +44,9 @@ class PedidoController {
     if (userLogado.provedor !== true) {
       const pedidos = await Pedido.find({
         cliente: req.userId
-      }).populate(["cliente", "produto"]);
+      })
+        .populate(["cliente", "produto"])
+        .sort("-createdAt");
 
       return res.json(pedidos);
     }
